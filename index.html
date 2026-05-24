@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Shahn Bendz | DJ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    font-family: 'Arial Black', Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  #overlay h2 {
+    color: #ff00ff;
+    font-size: 2rem;
+    text-shadow: 0 0 30px #ff00ff;
+    letter-spacing: 0.2em;
+    animation: flicker 1.5s infinite;
+  }
+
+  #enter-btn {
+    padding: 20px 60px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    background: transparent;
+    border: 3px solid #ff00ff;
+    color: #ff00ff;
+    cursor: pointer;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    box-shadow: 0 0 30px #ff00ff, inset 0 0 30px rgba(255,0,255,0.1);
+    animation: pulse-shadow 1s infinite alternate;
+    transition: background 0.2s;
+  }
+
+  #enter-btn:hover {
+    background: rgba(255,0,255,0.2);
+  }
+
+  .container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .dj-label {
+    font-size: 1rem;
+    color: #00ffff;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #00ffff;
+    animation: flicker 3s infinite;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    color: #fff;
+    text-shadow: 0 0 20px #ff00ff, 0 0 60px #ff00ff, 0 0 100px #ff00ff;
+    letter-spacing: 0.1em;
+    animation: pulse-text 1.2s infinite alternate;
+    line-height: 1;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    color: #ffff00;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 10px #ffff00;
+  }
+
+  .divider {
+    width: 300px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, transparent);
+    box-shadow: 0 0 10px #ff00ff;
+  }
+
+  .question {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  }
+
+  .buttons {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .btn {
+    padding: 18px 50px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: transform 0.1s;
+  }
+
+  #yes-btn {
+    background: #ff00ff;
+    color: #fff;
+    box-shadow: 0 0 25px #ff00ff, 0 0 50px #ff00ff;
+    animation: glow-yes 1s infinite alternate;
+  }
+
+  #yes-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 50px #ff00ff, 0 0 80px #ff00ff;
+  }
+
+  #no-btn {
+    position: fixed;
+    background: #1a1a1a;
+    color: #555;
+    border: 2px solid #333;
+    box-shadow: 0 0 5px #00ffff33;
+    z-index: 20;
+    transition: left 0.05s, top 0.05s;
+  }
+
+  .success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .success h2 {
+    font-size: clamp(2rem, 6vw, 4rem);
+    color: #ff00ff;
+    text-shadow: 0 0 30px #ff00ff, 0 0 60px #ff00ff;
+    animation: pulse-text 0.5s infinite alternate;
+  }
+
+  .success p {
+    color: #fff;
+    font-size: 1.2rem;
+    line-height: 1.8;
+  }
+
+  .success .contact {
+    color: #00ffff;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px #00ffff;
+    letter-spacing: 0.1em;
+  }
+
+  .music-note {
+    position: fixed;
+    font-size: 1.8rem;
+    pointer-events: none;
+    z-index: 5;
+    animation: float-up linear forwards;
+  }
+
+  @keyframes float-up {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+    20%  { opacity: 1; transform: translateY(-40px) rotate(15deg) scale(1); }
+    80%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-180px) rotate(-10deg) scale(0.8); }
+  }
+
+  @keyframes pulse-text {
+    from { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+    to   { text-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff, 0 0 120px #ff00ff; }
+  }
+
+  @keyframes glow-yes {
+    from { box-shadow: 0 0 20px #ff00ff; }
+    to   { box-shadow: 0 0 50px #ff00ff, 0 0 80px #ff00ff; }
+  }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.4; }
+    97% { opacity: 1; }
+    98% { opacity: 0.2; }
+    99% { opacity: 1; }
+  }
+
+  @keyframes pulse-shadow {
+    from { box-shadow: 0 0 20px #ff00ff, inset 0 0 20px rgba(255,0,255,0.1); }
+    to   { box-shadow: 0 0 60px #ff00ff, 0 0 100px #ff00ff, inset 0 0 40px rgba(255,0,255,0.2); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <h2>⚡ SHAHN BENDZ ⚡</h2>
+  <button id="enter-btn" onclick="startExperience()">🎧 ENTER THE RAVE 🎧</button>
+</div>
+
+<canvas id="fw"></canvas>
+
+<div class="container" id="main">
+  <div class="dj-label">★ &nbsp; DJ &nbsp; ★ &nbsp; Producer &nbsp; ★ &nbsp; Performer &nbsp; ★</div>
+  <h1>SHAHN BENDZ</h1>
+  <div class="tagline">TAKING YOUR EVENT TO THE NEXT LEVEL</div>
+  <div class="divider"></div>
+  <div class="question">Want to book me for your event?</div>
+  <div class="buttons">
+    <button class="btn" id="yes-btn" onclick="bookYes()">🎉 HELL YES!</button>
+    <button class="btn" id="no-btn">No thanks</button>
+  </div>
+</div>
+
+<div class="container success" id="success">
+  <div class="dj-label">★ &nbsp; BOOKING CONFIRMED &nbsp; ★</div>
+  <h2>🎉 LET'S PARTY! 🎉</h2>
+  <p>You made the right call.<br>Get ready for the night of your life.</p>
+  <div class="divider"></div>
+  <p class="contact">📧 shahnbendz@gmail.com</p>
+  <p style="color:#aaa; font-size:0.9rem; letter-spacing:0.2em;">REACH OUT TO LOCK IN YOUR DATE</p>
+</div>
+
+<script>
+// ─── AUDIO ───────────────────────────────────────────────
+let ac;
+
+function kick(t) {
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.connect(g); g.connect(ac.destination);
+  o.frequency.setValueAtTime(160, t);
+  o.frequency.exponentialRampToValueAtTime(0.01, t + 0.45);
+  g.gain.setValueAtTime(1.2, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+  o.start(t); o.stop(t + 0.5);
+}
+
+function snare(t) {
+  const buf = ac.createBuffer(1, ac.sampleRate * 0.12, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const n = ac.createBufferSource(); n.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 0.5;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0.7, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  n.connect(f); f.connect(g); g.connect(ac.destination);
+  n.start(t); n.stop(t + 0.12);
+}
+
+function hihat(t, vol) {
+  const buf = ac.createBuffer(1, ac.sampleRate * 0.05, ac.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const n = ac.createBufferSource(); n.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 8000;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+  n.connect(f); f.connect(g); g.connect(ac.destination);
+  n.start(t); n.stop(t + 0.05);
+}
+
+function note(freq, t, dur, vol = 0.18) {
+  const o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain();
+  o.type = 'sawtooth';
+  f.type = 'lowpass'; f.frequency.setValueAtTime(1800, t); f.frequency.exponentialRampToValueAtTime(400, t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(f); f.connect(g); g.connect(ac.destination);
+  o.frequency.value = freq;
+  o.start(t); o.stop(t + dur + 0.05);
+}
+
+function bass(freq, t, dur) {
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = 'sine';
+  g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g); g.connect(ac.destination);
+  o.frequency.value = freq;
+  o.start(t); o.stop(t + dur);
+}
+
+function scheduleBar(t, beat) {
+  const melody = [523.25, 0, 659.25, 0.5, 783.99, 1, 659.25, 1.5, 523.25, 2, 415.30, 2.5, 493.88, 3, 523.25, 3.5];
+  const bassLine = [65.41, 0, 65.41, 1, 82.41, 2, 73.42, 3];
+
+  for (let i = 0; i < 4; i++) kick(t + i * beat);
+  snare(t + beat); snare(t + 3 * beat);
+  for (let i = 0; i < 8; i++) hihat(t + i * beat / 2, i % 2 === 0 ? 0.28 : 0.14);
+
+  for (let i = 0; i < melody.length; i += 2) note(melody[i], t + melody[i+1] * beat, beat * 0.45);
+  for (let i = 0; i < bassLine.length; i += 2) bass(bassLine[i], t + bassLine[i+1] * beat, beat * 0.9);
+}
+
+function startEDM() {
+  const beat = 60 / 128;
+  const bar  = beat * 4;
+  let next   = ac.currentTime + 0.05;
+  (function loop() {
+    while (next < ac.currentTime + 1.5) { scheduleBar(next, beat); next += bar; }
+    setTimeout(loop, 500);
+  })();
+}
+
+// ─── FIREWORKS ───────────────────────────────────────────
+const canvas = document.getElementById('fw');
+const ctx    = canvas.getContext('2d');
+const COLS   = ['#ff00ff','#00ffff','#ffff00','#ff6600','#00ff88','#ff0066','#aa00ff'];
+let   parts  = [];
+let   fwRunning = false;
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+class Spark {
+  constructor(x, y, col) {
+    this.x = x; this.y = y; this.col = col;
+    const a = Math.random() * Math.PI * 2;
+    const s = Math.random() * 6 + 2;
+    this.vx = Math.cos(a) * s; this.vy = Math.sin(a) * s;
+    this.alpha = 1; this.r = Math.random() * 2.5 + 1; this.trail = [];
+  }
+  update() {
+    this.trail.push({x: this.x, y: this.y});
+    if (this.trail.length > 5) this.trail.shift();
+    this.x += this.vx; this.y += this.vy;
+    this.vy += 0.12; this.vx *= 0.98;
+    this.alpha -= 0.016;
+  }
+  draw() {
+    for (let i = 0; i < this.trail.length; i++) {
+      const a = (i / this.trail.length) * this.alpha * 0.5;
+      ctx.save(); ctx.globalAlpha = a;
+      ctx.fillStyle = this.col;
+      ctx.beginPath(); ctx.arc(this.trail[i].x, this.trail[i].y, this.r * 0.6, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.save(); ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.col; ctx.shadowBlur = 12; ctx.shadowColor = this.col;
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function explode(x, y, count = 80) {
+  const col = COLS[Math.floor(Math.random() * COLS.length)];
+  for (let i = 0; i < count; i++) parts.push(new Spark(x, y, col));
+}
+
+function fwLoop() {
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    parts[i].update(); parts[i].draw();
+    if (parts[i].alpha <= 0) parts.splice(i, 1);
+  }
+  requestAnimationFrame(fwLoop);
+}
+
+function launchLoop() {
+  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.65);
+  setTimeout(launchLoop, Math.random() * 700 + 300);
+}
+
+// ─── MUSIC NOTES ─────────────────────────────────────────
+const NOTE_CHARS = ['♪','♫','♬','🎵','🎶'];
+function spawnNotes() {
+  setInterval(() => {
+    const el = document.createElement('div');
+    el.className = 'music-note';
+    el.textContent = NOTE_CHARS[Math.floor(Math.random() * NOTE_CHARS.length)];
+    el.style.left   = (Math.random() * 98) + 'vw';
+    el.style.bottom = '-30px';
+    el.style.color  = COLS[Math.floor(Math.random() * COLS.length)];
+    el.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 5000);
+  }, 350);
+}
+
+// ─── NO BUTTON ───────────────────────────────────────────
+const noBtn = document.getElementById('no-btn');
+
+function placeNoBtn() {
+  const r = noBtn.getBoundingClientRect();
+  noBtn.style.left = (innerWidth  * 0.6) + 'px';
+  noBtn.style.top  = (innerHeight * 0.54) + 'px';
+}
+
+function runAway() {
+  const r   = noBtn.getBoundingClientRect();
+  const pad = 120;
+  let x, y;
+  do {
+    x = Math.random() * (innerWidth  - pad * 2) + pad;
+    y = Math.random() * (innerHeight - pad * 2) + pad;
+  } while (Math.abs(x - r.left) < 200 && Math.abs(y - r.top) < 200);
+  noBtn.style.left = x + 'px';
+  noBtn.style.top  = y + 'px';
+}
+
+noBtn.addEventListener('mouseover', runAway);
+noBtn.addEventListener('mousemove', runAway);
+
+// ─── YES BUTTON ──────────────────────────────────────────
+function bookYes() {
+  document.getElementById('main').style.display    = 'none';
+  document.getElementById('success').style.display = 'flex';
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => explode(Math.random() * canvas.width, Math.random() * canvas.height), i * 150);
+  }
+}
+
+// ─── START ───────────────────────────────────────────────
+function startExperience() {
+  document.getElementById('overlay').style.display = 'none';
+  ac = new AudioContext();
+  startEDM();
+  fwLoop();
+  launchLoop();
+  spawnNotes();
+  placeNoBtn();
+}
+</script>
+</body>
+</html>
