@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahn Bendz | DJ & Producer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    font-family: 'Arial Black', Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── OVERLAY ── */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    transition: opacity 1s ease;
+  }
+
+  #overlay h2 {
+    color: #fff;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff;
+    animation: pulse-text 2s infinite alternate;
+  }
+
+  #overlay p {
+    color: #555;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+  }
+
+  #enter-btn {
+    padding: 18px 70px;
+    font-size: 1rem;
+    font-weight: 900;
+    background: transparent;
+    border: 1px solid #ff00ff;
+    color: #ff00ff;
+    cursor: pointer;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px #ff00ff44;
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+
+  #enter-btn:hover {
+    background: rgba(255,0,255,0.08);
+    box-shadow: 0 0 40px #ff00ff88;
+  }
+
+  /* ── MAIN ── */
+  .container {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .dj-label {
+    font-size: 0.75rem;
+    color: #00ffff;
+    letter-spacing: 0.6em;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #00ffff88;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 9vw, 7rem);
+    color: #fff;
+    text-shadow: 0 0 30px #ff00ff, 0 0 80px #ff00ff;
+    letter-spacing: 0.08em;
+    animation: pulse-text 2s infinite alternate;
+    line-height: 1;
+  }
+
+  .tagline {
+    font-size: 0.8rem;
+    color: #666;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+  }
+
+  .divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ff00ff88, #00ffff88, transparent);
+  }
+
+  .question {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: #ccc;
+    letter-spacing: 0.1em;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    text-transform: uppercase;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .btn {
+    padding: 16px 48px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+
+  #yes-btn {
+    background: #ff00ff;
+    color: #fff;
+    box-shadow: 0 0 20px #ff00ff88;
+    transition: box-shadow 0.2s, transform 0.1s;
+  }
+
+  #yes-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 40px #ff00ff;
+  }
+
+  #no-btn {
+    background: #ff00ff;
+    color: #fff;
+    border: none;
+    box-shadow: 0 0 20px #ff00ff88;
+    transition: none;
+  }
+
+  #no-btn.running {
+    position: fixed;
+    z-index: 20;
+  }
+
+  /* ── SUCCESS ── */
+  .success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .success h2 {
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    color: #fff;
+    text-shadow: 0 0 30px #ff00ff, 0 0 60px #ff00ff;
+    letter-spacing: 0.1em;
+    animation: pulse-text 1.5s infinite alternate;
+  }
+
+  .success .sub {
+    color: #888;
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+  }
+
+  .success .contact {
+    color: #00ffff;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px #00ffff66;
+    letter-spacing: 0.15em;
+    font-family: Arial, sans-serif;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes pulse-text {
+    from { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+    to   { text-shadow: 0 0 50px #ff00ff, 0 0 100px #ff00ff, 0 0 150px #ff00ff44; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <h2>Shahn Bendz</h2>
+  <p>DJ &nbsp;&nbsp;·&nbsp;&nbsp; Producer &nbsp;&nbsp;·&nbsp;&nbsp; Performer</p>
+  <button id="enter-btn" onclick="startExperience()">Enter</button>
+</div>
+
+<canvas id="fw"></canvas>
+
+<div class="container" id="main">
+  <div class="dj-label">DJ &nbsp;·&nbsp; Producer &nbsp;·&nbsp; Performer</div>
+  <h1>SHAHN BENDZ</h1>
+  <div class="tagline">Available for bookings worldwide</div>
+  <div class="divider"></div>
+  <div class="question">Looking to book for your event?</div>
+  <div class="buttons">
+    <button class="btn" id="yes-btn" onclick="bookYes()">Book Now</button>
+    <button class="btn" id="no-btn">No</button>
+  </div>
+</div>
+
+<div class="container success" id="success">
+  <div class="dj-label">Booking Enquiry</div>
+  <h2>Let's Make It Happen</h2>
+  <div class="divider"></div>
+  <p class="sub">Get in touch to lock in your date</p>
+  <p class="contact">shahnbendz@gmail.com</p>
+</div>
+
+<script>
+// ─── AUDIO ───────────────────────────────────────────────
+const track = new Audio('Shahn Bendz - Pentada Funk V5.wav');
+track.loop  = true;
+
+// ─── FIREWORKS ───────────────────────────────────────────
+const canvas = document.getElementById('fw');
+const ctx    = canvas.getContext('2d');
+const COLS   = ['#ff00ff','#00ffff','#ffff00','#ff6600','#00ff88','#ff0066','#aa00ff'];
+let   parts  = [];
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+class Spark {
+  constructor(x, y, col) {
+    this.x = x; this.y = y; this.col = col;
+    const a = Math.random() * Math.PI * 2;
+    const s = Math.random() * 6 + 2;
+    this.vx = Math.cos(a) * s; this.vy = Math.sin(a) * s;
+    this.alpha = 1; this.r = Math.random() * 2.5 + 1; this.trail = [];
+  }
+  update() {
+    this.trail.push({x: this.x, y: this.y});
+    if (this.trail.length > 5) this.trail.shift();
+    this.x += this.vx; this.y += this.vy;
+    this.vy += 0.12; this.vx *= 0.98;
+    this.alpha -= 0.016;
+  }
+  draw() {
+    for (let i = 0; i < this.trail.length; i++) {
+      ctx.save(); ctx.globalAlpha = (i / this.trail.length) * this.alpha * 0.5;
+      ctx.fillStyle = this.col;
+      ctx.beginPath(); ctx.arc(this.trail[i].x, this.trail[i].y, this.r * 0.6, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.save(); ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.col; ctx.shadowBlur = 12; ctx.shadowColor = this.col;
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function explode(x, y, count = 80) {
+  const col = COLS[Math.floor(Math.random() * COLS.length)];
+  for (let i = 0; i < count; i++) parts.push(new Spark(x, y, col));
+}
+
+function fwLoop() {
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    parts[i].update(); parts[i].draw();
+    if (parts[i].alpha <= 0) parts.splice(i, 1);
+  }
+  requestAnimationFrame(fwLoop);
+}
+
+function launchLoop() {
+  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.7);
+  setTimeout(launchLoop, Math.random() * 800 + 400);
+}
+
+// ─── NO BUTTON ───────────────────────────────────────────
+const noBtn = document.getElementById('no-btn');
+
+function runAway() {
+  if (!noBtn.classList.contains('running')) {
+    const r = noBtn.getBoundingClientRect();
+    noBtn.classList.add('running');
+    noBtn.style.left = r.left + 'px';
+    noBtn.style.top  = r.top  + 'px';
+  }
+  const pad = 100;
+  const r   = noBtn.getBoundingClientRect();
+  const cx  = r.left + r.width / 2;
+  const cy  = r.top  + r.height / 2;
+  let x, y;
+  do {
+    x = Math.random() * (innerWidth  - pad * 2) + pad;
+    y = Math.random() * (innerHeight - pad * 2) + pad;
+  } while (Math.abs(x - cx) < 250 && Math.abs(y - cy) < 250);
+  noBtn.style.left = x + 'px';
+  noBtn.style.top  = y + 'px';
+}
+
+document.addEventListener('mousemove', (e) => {
+  const r    = noBtn.getBoundingClientRect();
+  const dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+  if (dist < 180) runAway();
+});
+
+// ─── YES BUTTON ──────────────────────────────────────────
+function bookYes() {
+  document.getElementById('main').style.display    = 'none';
+  document.getElementById('success').style.display = 'flex';
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => explode(Math.random() * canvas.width, Math.random() * canvas.height), i * 150);
+  }
+}
+
+// ─── START ───────────────────────────────────────────────
+function startExperience() {
+  const overlay = document.getElementById('overlay');
+  const main    = document.getElementById('main');
+  track.play();
+  fwLoop();
+  launchLoop();
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    main.style.opacity = '1';
+  }, 1000);
+}
+</script>
+</body>
+</html>

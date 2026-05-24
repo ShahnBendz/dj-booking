@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Book Shahn Bendz | DJ</title>
+<title>Shahn Bendz | DJ & Producer</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -25,7 +25,6 @@
     pointer-events: none;
   }
 
-  /* scanlines */
   body::after {
     content: '';
     position: fixed;
@@ -36,6 +35,7 @@
     z-index: 999;
   }
 
+  /* ── OVERLAY ── */
   #overlay {
     position: fixed;
     inset: 0;
@@ -45,36 +45,48 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 40px;
+    transition: opacity 1s ease;
   }
 
   #overlay h2 {
-    color: #ff00ff;
-    font-size: 2rem;
-    text-shadow: 0 0 30px #ff00ff;
-    letter-spacing: 0.2em;
-    animation: flicker 1.5s infinite;
+    color: #fff;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff;
+    animation: pulse-text 2s infinite alternate;
+  }
+
+  #overlay p {
+    color: #555;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
   }
 
   #enter-btn {
-    padding: 20px 60px;
-    font-size: 1.4rem;
+    padding: 18px 70px;
+    font-size: 1rem;
     font-weight: 900;
     background: transparent;
-    border: 3px solid #ff00ff;
+    border: 1px solid #ff00ff;
     color: #ff00ff;
     cursor: pointer;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.4em;
     text-transform: uppercase;
-    box-shadow: 0 0 30px #ff00ff, inset 0 0 30px rgba(255,0,255,0.1);
-    animation: pulse-shadow 1s infinite alternate;
-    transition: background 0.2s;
+    box-shadow: 0 0 20px #ff00ff44;
+    transition: box-shadow 0.3s, background 0.3s;
   }
 
   #enter-btn:hover {
-    background: rgba(255,0,255,0.2);
+    background: rgba(255,0,255,0.08);
+    box-shadow: 0 0 40px #ff00ff88;
   }
 
+  /* ── MAIN ── */
   .container {
     position: relative;
     z-index: 10;
@@ -83,276 +95,183 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 22px;
+    opacity: 0;
+    transition: opacity 1s ease;
   }
 
   .dj-label {
-    font-size: 1rem;
+    font-size: 0.75rem;
     color: #00ffff;
-    letter-spacing: 0.5em;
+    letter-spacing: 0.6em;
     text-transform: uppercase;
-    text-shadow: 0 0 10px #00ffff;
-    animation: flicker 3s infinite;
+    text-shadow: 0 0 10px #00ffff88;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
   }
 
   h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(3rem, 9vw, 7rem);
     color: #fff;
-    text-shadow: 0 0 20px #ff00ff, 0 0 60px #ff00ff, 0 0 100px #ff00ff;
-    letter-spacing: 0.1em;
-    animation: pulse-text 1.2s infinite alternate;
+    text-shadow: 0 0 30px #ff00ff, 0 0 80px #ff00ff;
+    letter-spacing: 0.08em;
+    animation: pulse-text 2s infinite alternate;
     line-height: 1;
   }
 
   .tagline {
-    font-size: 1rem;
-    color: #ffff00;
-    letter-spacing: 0.3em;
-    text-shadow: 0 0 10px #ffff00;
+    font-size: 0.8rem;
+    color: #666;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
   }
 
   .divider {
-    width: 300px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, transparent);
-    box-shadow: 0 0 10px #ff00ff;
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ff00ff88, #00ffff88, transparent);
   }
 
   .question {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    color: #fff;
-    letter-spacing: 0.05em;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: #ccc;
+    letter-spacing: 0.1em;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    text-transform: uppercase;
   }
 
   .buttons {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .btn {
-    padding: 18px 50px;
-    font-size: 1.3rem;
+    padding: 16px 48px;
+    font-size: 0.9rem;
     font-weight: 900;
     border: none;
     cursor: pointer;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    border-radius: 4px;
-    transition: transform 0.1s;
+    border-radius: 2px;
   }
 
   #yes-btn {
     background: #ff00ff;
     color: #fff;
-    box-shadow: 0 0 25px #ff00ff, 0 0 50px #ff00ff;
-    animation: glow-yes 1s infinite alternate;
+    box-shadow: 0 0 20px #ff00ff88;
+    transition: box-shadow 0.2s, transform 0.1s;
   }
 
   #yes-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 50px #ff00ff, 0 0 80px #ff00ff;
+    transform: scale(1.04);
+    box-shadow: 0 0 40px #ff00ff;
   }
 
   #no-btn {
-    position: fixed;
-    background: #1a1a1a;
-    color: #555;
-    border: 2px solid #333;
-    box-shadow: 0 0 5px #00ffff33;
-    z-index: 20;
-    transition: left 0.05s, top 0.05s;
+    background: #ff00ff;
+    color: #fff;
+    border: none;
+    box-shadow: 0 0 20px #ff00ff88;
+    transition: none;
   }
 
+  #no-btn.running {
+    position: fixed;
+    z-index: 20;
+  }
+
+  /* ── SUCCESS ── */
   .success {
     display: none;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    animation: fadeIn 0.5s ease;
+    gap: 24px;
+    animation: fadeIn 0.6s ease;
   }
 
   .success h2 {
-    font-size: clamp(2rem, 6vw, 4rem);
-    color: #ff00ff;
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    color: #fff;
     text-shadow: 0 0 30px #ff00ff, 0 0 60px #ff00ff;
-    animation: pulse-text 0.5s infinite alternate;
+    letter-spacing: 0.1em;
+    animation: pulse-text 1.5s infinite alternate;
   }
 
-  .success p {
-    color: #fff;
-    font-size: 1.2rem;
-    line-height: 1.8;
+  .success .sub {
+    color: #888;
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    font-weight: normal;
   }
 
   .success .contact {
     color: #00ffff;
-    font-size: 1.4rem;
-    text-shadow: 0 0 10px #00ffff;
-    letter-spacing: 0.1em;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px #00ffff66;
+    letter-spacing: 0.15em;
+    font-family: Arial, sans-serif;
   }
 
-  .music-note {
-    position: fixed;
-    font-size: 1.8rem;
-    pointer-events: none;
-    z-index: 5;
-    animation: float-up linear forwards;
-  }
-
-  @keyframes float-up {
-    0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
-    20%  { opacity: 1; transform: translateY(-40px) rotate(15deg) scale(1); }
-    80%  { opacity: 1; }
-    100% { opacity: 0; transform: translateY(-180px) rotate(-10deg) scale(0.8); }
-  }
-
+  /* ── KEYFRAMES ── */
   @keyframes pulse-text {
     from { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
-    to   { text-shadow: 0 0 40px #ff00ff, 0 0 80px #ff00ff, 0 0 120px #ff00ff; }
-  }
-
-  @keyframes glow-yes {
-    from { box-shadow: 0 0 20px #ff00ff; }
-    to   { box-shadow: 0 0 50px #ff00ff, 0 0 80px #ff00ff; }
-  }
-
-  @keyframes flicker {
-    0%, 95%, 100% { opacity: 1; }
-    96% { opacity: 0.4; }
-    97% { opacity: 1; }
-    98% { opacity: 0.2; }
-    99% { opacity: 1; }
-  }
-
-  @keyframes pulse-shadow {
-    from { box-shadow: 0 0 20px #ff00ff, inset 0 0 20px rgba(255,0,255,0.1); }
-    to   { box-shadow: 0 0 60px #ff00ff, 0 0 100px #ff00ff, inset 0 0 40px rgba(255,0,255,0.2); }
+    to   { text-shadow: 0 0 50px #ff00ff, 0 0 100px #ff00ff, 0 0 150px #ff00ff44; }
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to   { opacity: 1; transform: scale(1); }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
 <body>
 
 <div id="overlay">
-  <h2>⚡ SHAHN BENDZ ⚡</h2>
-  <button id="enter-btn" onclick="startExperience()">🎧 ENTER THE RAVE 🎧</button>
+  <h2>Shahn Bendz</h2>
+  <p>DJ &nbsp;&nbsp;·&nbsp;&nbsp; Producer &nbsp;&nbsp;·&nbsp;&nbsp; Performer</p>
+  <button id="enter-btn" onclick="startExperience()">Enter</button>
 </div>
 
 <canvas id="fw"></canvas>
 
 <div class="container" id="main">
-  <div class="dj-label">★ &nbsp; DJ &nbsp; ★ &nbsp; Producer &nbsp; ★ &nbsp; Performer &nbsp; ★</div>
+  <div class="dj-label">DJ &nbsp;·&nbsp; Producer &nbsp;·&nbsp; Performer</div>
   <h1>SHAHN BENDZ</h1>
-  <div class="tagline">TAKING YOUR EVENT TO THE NEXT LEVEL</div>
+  <div class="tagline">Available for bookings worldwide</div>
   <div class="divider"></div>
-  <div class="question">Want to book me for your event?</div>
+  <div class="question">Looking to book for your event?</div>
   <div class="buttons">
-    <button class="btn" id="yes-btn" onclick="bookYes()">🎉 HELL YES!</button>
-    <button class="btn" id="no-btn">No thanks</button>
+    <button class="btn" id="yes-btn" onclick="bookYes()">Book Now</button>
+    <button class="btn" id="no-btn">No</button>
   </div>
 </div>
 
 <div class="container success" id="success">
-  <div class="dj-label">★ &nbsp; BOOKING CONFIRMED &nbsp; ★</div>
-  <h2>🎉 LET'S PARTY! 🎉</h2>
-  <p>You made the right call.<br>Get ready for the night of your life.</p>
+  <div class="dj-label">Booking Enquiry</div>
+  <h2>Let's Make It Happen</h2>
   <div class="divider"></div>
-  <p class="contact">📧 shahnbendz@gmail.com</p>
-  <p style="color:#aaa; font-size:0.9rem; letter-spacing:0.2em;">REACH OUT TO LOCK IN YOUR DATE</p>
+  <p class="sub">Get in touch to lock in your date</p>
+  <p class="contact">shahnbendz@gmail.com</p>
 </div>
 
 <script>
 // ─── AUDIO ───────────────────────────────────────────────
-let ac;
-
-function kick(t) {
-  const o = ac.createOscillator(), g = ac.createGain();
-  o.connect(g); g.connect(ac.destination);
-  o.frequency.setValueAtTime(160, t);
-  o.frequency.exponentialRampToValueAtTime(0.01, t + 0.45);
-  g.gain.setValueAtTime(1.2, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-  o.start(t); o.stop(t + 0.5);
-}
-
-function snare(t) {
-  const buf = ac.createBuffer(1, ac.sampleRate * 0.12, ac.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-  const n = ac.createBufferSource(); n.buffer = buf;
-  const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 0.5;
-  const g = ac.createGain();
-  g.gain.setValueAtTime(0.7, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-  n.connect(f); f.connect(g); g.connect(ac.destination);
-  n.start(t); n.stop(t + 0.12);
-}
-
-function hihat(t, vol) {
-  const buf = ac.createBuffer(1, ac.sampleRate * 0.05, ac.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-  const n = ac.createBufferSource(); n.buffer = buf;
-  const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 8000;
-  const g = ac.createGain();
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-  n.connect(f); f.connect(g); g.connect(ac.destination);
-  n.start(t); n.stop(t + 0.05);
-}
-
-function note(freq, t, dur, vol = 0.18) {
-  const o = ac.createOscillator(), f = ac.createBiquadFilter(), g = ac.createGain();
-  o.type = 'sawtooth';
-  f.type = 'lowpass'; f.frequency.setValueAtTime(1800, t); f.frequency.exponentialRampToValueAtTime(400, t + dur);
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  o.connect(f); f.connect(g); g.connect(ac.destination);
-  o.frequency.value = freq;
-  o.start(t); o.stop(t + dur + 0.05);
-}
-
-function bass(freq, t, dur) {
-  const o = ac.createOscillator(), g = ac.createGain();
-  o.type = 'sine';
-  g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  o.connect(g); g.connect(ac.destination);
-  o.frequency.value = freq;
-  o.start(t); o.stop(t + dur);
-}
-
-function scheduleBar(t, beat) {
-  const melody = [523.25, 0, 659.25, 0.5, 783.99, 1, 659.25, 1.5, 523.25, 2, 415.30, 2.5, 493.88, 3, 523.25, 3.5];
-  const bassLine = [65.41, 0, 65.41, 1, 82.41, 2, 73.42, 3];
-
-  for (let i = 0; i < 4; i++) kick(t + i * beat);
-  snare(t + beat); snare(t + 3 * beat);
-  for (let i = 0; i < 8; i++) hihat(t + i * beat / 2, i % 2 === 0 ? 0.28 : 0.14);
-
-  for (let i = 0; i < melody.length; i += 2) note(melody[i], t + melody[i+1] * beat, beat * 0.45);
-  for (let i = 0; i < bassLine.length; i += 2) bass(bassLine[i], t + bassLine[i+1] * beat, beat * 0.9);
-}
-
-function startEDM() {
-  const beat = 60 / 128;
-  const bar  = beat * 4;
-  let next   = ac.currentTime + 0.05;
-  (function loop() {
-    while (next < ac.currentTime + 1.5) { scheduleBar(next, beat); next += bar; }
-    setTimeout(loop, 500);
-  })();
-}
+const track = new Audio('Shahn Bendz - Pentada Funk V5.wav');
+track.loop  = true;
 
 // ─── FIREWORKS ───────────────────────────────────────────
 const canvas = document.getElementById('fw');
 const ctx    = canvas.getContext('2d');
 const COLS   = ['#ff00ff','#00ffff','#ffff00','#ff6600','#00ff88','#ff0066','#aa00ff'];
 let   parts  = [];
-let   fwRunning = false;
 
 function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
 resize(); window.addEventListener('resize', resize);
@@ -374,8 +293,7 @@ class Spark {
   }
   draw() {
     for (let i = 0; i < this.trail.length; i++) {
-      const a = (i / this.trail.length) * this.alpha * 0.5;
-      ctx.save(); ctx.globalAlpha = a;
+      ctx.save(); ctx.globalAlpha = (i / this.trail.length) * this.alpha * 0.5;
       ctx.fillStyle = this.col;
       ctx.beginPath(); ctx.arc(this.trail[i].x, this.trail[i].y, this.r * 0.6, 0, Math.PI*2); ctx.fill();
       ctx.restore();
@@ -403,49 +321,38 @@ function fwLoop() {
 }
 
 function launchLoop() {
-  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.65);
-  setTimeout(launchLoop, Math.random() * 700 + 300);
-}
-
-// ─── MUSIC NOTES ─────────────────────────────────────────
-const NOTE_CHARS = ['♪','♫','♬','🎵','🎶'];
-function spawnNotes() {
-  setInterval(() => {
-    const el = document.createElement('div');
-    el.className = 'music-note';
-    el.textContent = NOTE_CHARS[Math.floor(Math.random() * NOTE_CHARS.length)];
-    el.style.left   = (Math.random() * 98) + 'vw';
-    el.style.bottom = '-30px';
-    el.style.color  = COLS[Math.floor(Math.random() * COLS.length)];
-    el.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 5000);
-  }, 350);
+  explode(Math.random() * canvas.width, Math.random() * canvas.height * 0.7);
+  setTimeout(launchLoop, Math.random() * 800 + 400);
 }
 
 // ─── NO BUTTON ───────────────────────────────────────────
 const noBtn = document.getElementById('no-btn');
 
-function placeNoBtn() {
-  const r = noBtn.getBoundingClientRect();
-  noBtn.style.left = (innerWidth  * 0.6) + 'px';
-  noBtn.style.top  = (innerHeight * 0.54) + 'px';
-}
-
 function runAway() {
+  if (!noBtn.classList.contains('running')) {
+    const r = noBtn.getBoundingClientRect();
+    noBtn.classList.add('running');
+    noBtn.style.left = r.left + 'px';
+    noBtn.style.top  = r.top  + 'px';
+  }
+  const pad = 100;
   const r   = noBtn.getBoundingClientRect();
-  const pad = 120;
+  const cx  = r.left + r.width / 2;
+  const cy  = r.top  + r.height / 2;
   let x, y;
   do {
     x = Math.random() * (innerWidth  - pad * 2) + pad;
     y = Math.random() * (innerHeight - pad * 2) + pad;
-  } while (Math.abs(x - r.left) < 200 && Math.abs(y - r.top) < 200);
+  } while (Math.abs(x - cx) < 250 && Math.abs(y - cy) < 250);
   noBtn.style.left = x + 'px';
   noBtn.style.top  = y + 'px';
 }
 
-noBtn.addEventListener('mouseover', runAway);
-noBtn.addEventListener('mousemove', runAway);
+document.addEventListener('mousemove', (e) => {
+  const r    = noBtn.getBoundingClientRect();
+  const dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+  if (dist < 180) runAway();
+});
 
 // ─── YES BUTTON ──────────────────────────────────────────
 function bookYes() {
@@ -458,13 +365,16 @@ function bookYes() {
 
 // ─── START ───────────────────────────────────────────────
 function startExperience() {
-  document.getElementById('overlay').style.display = 'none';
-  ac = new AudioContext();
-  startEDM();
+  const overlay = document.getElementById('overlay');
+  const main    = document.getElementById('main');
+  track.play();
   fwLoop();
   launchLoop();
-  spawnNotes();
-  placeNoBtn();
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    main.style.opacity = '1';
+  }, 1000);
 }
 </script>
 </body>
